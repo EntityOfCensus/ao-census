@@ -1,0 +1,28 @@
+{
+  "name": "ao-census",
+  "version": "0.0.1",
+  "type": "module",
+  "description": "census surveys",
+  "main": "index.js",
+  "scripts": {
+    "start": "node ./src/main.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/charmful0x/ao-census.git"
+  },
+  "keywords": [
+    "census",
+    "AO"
+  ],
+  "author": "charmful0x",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/charmful0x/ao-census/issues"
+  },
+  "homepage": "https://github.com/charmful0x/ao-census#readme",
+  "dependencies": {
+    "@permaweb/aoconnect": "^0.0.48",
+    "dotenv": "^16.4.5"
+  }
+}
