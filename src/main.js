@@ -11,6 +11,9 @@ const wallet = JSON.parse(process.env.JWK);
 
 const TESTING_CENSUS_PROCESS_ID = "taFQ_bgJhuBLNP7VXMdYq9xq9938oqinxboiLi7k2M8";
 
+addSurvey();
+getUserSurveys();
+
 async function getSurveys() {
   try {
     const tx = await dryrun({
@@ -34,7 +37,7 @@ async function getSurveyByKv() {
       tags: [
         { name: "Action", value: "GetSurveyByKv" },
         { name: "Key", value: "ao_id" },
-        { name: "Val", value: "XatzueBlGj8VowhKXZd9y9CwAAnBROmxZlE3OW6d7ZM" },
+        { name: "Val", value: "Zwc3mlhb_jqSFfQMFhi_dqaLuaHTVxYI_YHx2XVLP8k" },
       ],
     });
 
@@ -55,7 +58,7 @@ async function getUserSurveys() {
         { name: "Action", value: "GetUserSurveyIds" },
         {
           name: "UserAddress",
-          value: "vZY2XY1RD9HIfWi8ift-1_DnHLDadZMWrufSh-_rKF0",
+          value: "GZ9C-1wQUbq-C1V9meyRBkFsoiNXlCS1gETxSL0P3LY",
         },
       ],
     });

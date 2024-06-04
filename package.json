@@ -22,6 +22,7 @@
   },
   "homepage": "https://github.com/charmful0x/ao-census#readme",
   "dependencies": {
+    "@othent/kms": "^1.0.12",
     "@permaweb/aoconnect": "^0.0.48",
     "dotenv": "^16.4.5"
   }
