@@ -5,7 +5,8 @@
   "description": "census surveys",
   "main": "index.js",
   "scripts": {
-    "start": "node ./src/main.js"
+    "start": "node ./src/main.js",
+    "test": "node --test --test-timeout=100000000 --expose-gc --experimental-wasm-memory64 ./src/test.mjs"
   },
   "repository": {
     "type": "git",
@@ -25,5 +26,8 @@
     "@othent/kms": "^1.0.12",
     "@permaweb/aoconnect": "^0.0.48",
     "dotenv": "^16.4.5"
+  },
+  "engines": {
+    "node": "22"
   }
 }
