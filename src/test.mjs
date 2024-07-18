@@ -4,7 +4,6 @@ import createModule from './eoc-tfhelib.js';
     try {
         console.log("Starting module initialization...");
         const Module = await createModule();
-        // console.log("Module loaded:", Module);
 
         Module.onRuntimeInitialized = () => {
             console.log("Module initialized successfully.");
@@ -13,60 +12,46 @@ import createModule from './eoc-tfhelib.js';
             const base64SecretKey = Module.generateSecretKey();
             console.log("Generated Secret Key: OK");//, base64SecretKey);
 
-            // Generate a public key from the secret key
+            // Generate a public key using the secret key
             const base64PublicKey = Module.generatePublicKey(base64SecretKey);
             console.log("Generated Public Key: OK");//, base64PublicKey);
 
-            // Encrypt integers using the secret key
-            const valueToEncrypt1 = 7;
-            const valueToEncrypt2 = 5;
-            const encryptedValue1 = Module.encryptInteger(valueToEncrypt1, base64SecretKey);
-            const encryptedValue2 = Module.encryptInteger(valueToEncrypt2, base64SecretKey);
-            console.log("Encrypted Value 1: OK");//, encryptedValue1);
-            console.log("Encrypted Value 2: OK"); //, encryptedValue2);
+            // Encrypt an integer using the global secret key
+            const valueToEncrypt = 7;
+            const encryptedValue = Module.encryptInteger(valueToEncrypt);
+            console.log("Encrypted Value: OK");//, encryptedValue);
 
-            // Encrypt a string using the secret key
-            const stringToEncrypt = "Hello, World!";
-            const encryptedString = Module.encryptString(stringToEncrypt, base64SecretKey);
-            console.log("Encrypted String: OK");//, encryptedString);
+            // Decrypt the encrypted integer using the global secret key
+            const decryptedValue = Module.decryptInteger(encryptedValue);
+            console.log("Decrypted Value: ", decryptedValue);
 
-            // Perform addition on encrypted values
-            const encryptedSum = Module.addCiphertexts(encryptedValue1, encryptedValue2, base64PublicKey);
+            // Verify the decrypted value matches the original
+            if (decryptedValue === valueToEncrypt) {
+                console.log("Encryption and decryption successful.");
+            } else {
+                console.log("Mismatch in encryption and decryption.");
+            }
+
+            // Encrypt another integer
+            const valueToEncrypt2 = 3;
+            const encryptedValue2 = Module.encryptInteger(valueToEncrypt2);
+            console.log("Encrypted Value 2: OK");//, encryptedValue2);
+
+            // Add the encrypted integers using the global public key
+            const encryptedSum = Module.addCiphertexts(encryptedValue, encryptedValue2);
             console.log("Encrypted Sum: OK");//, encryptedSum);
 
-            // Perform subtraction on encrypted values
-            const encryptedDiff = Module.subtractCiphertexts(encryptedValue1, encryptedValue2, base64PublicKey);
+            // Decrypt the encrypted sum using the global secret key
+            const decryptedSum = Module.decryptInteger(encryptedSum);
+            console.log("Decrypted Sum:", decryptedSum);
+
+            // Subtract the encrypted integers using the global public key
+            const encryptedDiff = Module.subtractCiphertexts(encryptedValue, encryptedValue2);
             console.log("Encrypted Difference: OK");//, encryptedDiff);
 
-            // Decrypt the results using the secret key
-            const decryptedSum = Module.decryptInteger(encryptedSum, base64SecretKey);
-            const decryptedDiff = Module.decryptInteger(encryptedDiff, base64SecretKey);
-            console.log("Decrypted Sum:", decryptedSum);
+            // Decrypt the encrypted difference using the global secret key
+            const decryptedDiff = Module.decryptInteger(encryptedDiff);
             console.log("Decrypted Difference:", decryptedDiff);
-
-            // Decrypt the encrypted string using the secret key
-            const decryptedString = Module.decryptString(encryptedString, base64SecretKey, stringToEncrypt.length);
-            console.log("Decrypted String:", decryptedString);
-
-            // Verify the decrypted string matches the original
-            if (decryptedString === stringToEncrypt) {
-                console.log("String encryption and decryption successful.");
-            } else {
-                console.log("Mismatch in string encryption and decryption.");
-            }
-
-            // Verify the decrypted values match the expected results
-            if (decryptedSum === (valueToEncrypt1 + valueToEncrypt2)) {
-                console.log("Addition successful.");
-            } else {
-                console.log("Mismatch in addition.");
-            }
-
-            if (decryptedDiff === (valueToEncrypt1 - valueToEncrypt2)) {
-                console.log("Subtraction successful.");
-            } else {
-                console.log("Mismatch in subtraction.");
-            }
         };
 
         if (Module.calledRun) {

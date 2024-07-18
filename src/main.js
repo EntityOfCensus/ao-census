@@ -80,20 +80,20 @@ console.log(key);
 //   }
 // }
 
-// async function addSurvey() {
-//   try {
-//     const messageId = await message({
-//       process: "ENnyYpVeZlS0j01ss-Rht9rHVpmZ73vItDb2Xtrtikc",
-//       signer: createDataItemSigner(wallet),
-//       // the survey as stringified JSON
-//       data: '{"type":"respondent-survey","config":"easy","countryCodes":[],"countryNames":[],"wantedRespondents":1,"wantedQuestions":4,"targetGroups":[{"minimumAge":0,"maximumAge":0,"gender":"male","country":"Germany","wantedCompletes":"1","ir":"","loi":"","daysInField":"","startDate":"1983-08-17T00:00:00.000Z","time":"2024-06-04T14:15:10.846Z","visible":true}]}',
-//       tags: [{ name: "Action", value: "AddSurvey" }],
-//     });
+async function addSurvey() {
+  try {
+    const messageId = await message({
+      process: "ENnyYpVeZlS0j01ss-Rht9rHVpmZ73vItDb2Xtrtikc",
+      signer: createDataItemSigner(wallet),
+      // the survey as stringified JSON
+      data: '{"type":"respondent-survey","config":"easy","countryCodes":[],"countryNames":[],"wantedRespondents":1,"wantedQuestions":4,"targetGroups":[{"minimumAge":0,"maximumAge":0,"gender":"male","country":"Germany","wantedCompletes":"1","ir":"","loi":"","daysInField":"","startDate":"1983-08-17T00:00:00.000Z","time":"2024-06-04T14:15:10.846Z","visible":true}]}',
+      tags: [{ name: "Action", value: "AddSurvey" }],
+    });
 
-//     console.log(messageId);
-//     return { messageId };
-//   } catch (error) {
-//     console.log(error);
-//     return { messageId: false };
-//   }
-// }
+    console.log(messageId);
+    return { messageId };
+  } catch (error) {
+    console.log(error);
+    return { messageId: false };
+  }
+}
