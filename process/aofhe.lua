@@ -101,3 +101,44 @@ local function find_encripted_data_by_kv(k, v)
     end
     return nil -- Return nil if not found
 end
+
+--[[
+     StoreEncryptedData
+   ]]
+--
+Handlers.add(
+    "storeEncryptedData",
+    Handlers.utils.hasMatchingTag("Action", "StoreEncryptedData"),
+    function(msg)
+        local local_s = json.decode(msg.Data)
+        -- print(local_s)
+        local valid, err = validateInstance(local_s, template)
+        assert(valid, "Recipient is required!")
+
+        if not Users[msg.From] then
+            Users[msg.From] = {}
+        end
+
+        local_s["ao_id"] = msg.Id
+        local_s["ao_sender"] = msg.From
+
+        if(local_s.type == "string") then
+            local_s["value"] = Tfhe.encryptString(local_s.value, "key")
+        else
+            if(local_s.type == "integer") then
+                local_s["value"] = Tfhe.encryptInteger(local_s.value, "key")
+            end     
+        end    
+
+        table.insert(Encryption, local_s)
+        table.insert(Users[msg.From], msg.Id)    
+        ao.send(
+            {
+                Target = msg.From,
+                Tags = {
+                    Action = "StoreEncryptedData - Added"
+                }
+            }
+        )
+    end
+)
