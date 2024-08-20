@@ -37,7 +37,67 @@ Encryption = Encryption or {}
 Users = Users or {}
 Name = Name or "EntityOfCode AO FHE Demo"
 
+Tfhe.info()
+Tfhe.generateSecretKey()
+
 --[[
   utils helper functions
 ]]
 --
+
+-- The encrypted data template
+local template = {
+    type = "string",
+    value = "string"
+}
+
+-- Function to check the type of each key in the object
+local function checkType(value, expectedType)
+    if expectedType == "table" then
+        return type(value) == "table"
+    else
+        return type(value) == expectedType
+    end
+end
+
+-- Function to validate an object against the survey template
+local function validateInstance(instance, tmpl)
+    for key, expectedType in pairs(tmpl) do
+        local value = instance[key]
+        if type(expectedType) == "table" then
+            if type(value) ~= "table" then
+                return false, key .. " is not a table"
+            end
+            for i, v in ipairs(value) do
+                local valid, err = validateInstance(v, expectedType[1])
+                if not valid then
+                    return false, key .. "[" .. i .. "]: " .. err
+                end
+            end
+        else
+            if not checkType(value, expectedType) then
+                return false, key .. " is not of type " .. expectedType
+            end
+        end
+    end
+    return true
+end
+
+-- Function that returns users count from the associative table Users
+local function users_count()
+    local count = 0
+    for _ in pairs(Users) do
+        count = count + 1
+    end
+    return count
+end
+
+-- Function to find a table with a specific value
+local function find_encripted_data_by_kv(k, v)
+    for i, inner_table in ipairs(Encryption) do
+        if inner_table[k] == v then
+            return inner_table
+        end
+    end
+    return nil -- Return nil if not found
+end
