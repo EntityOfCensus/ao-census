@@ -9,20 +9,15 @@ local Tfhe = require("eoc_tfhe")
 --[[
   This module implements the EntityOfCode AO FHE Demo on ao
 
-  Terms:
-    Sender: the wallet or Process that sent the Message
-
   It will first initialize the internal state, define utils code blocks and then attach handlers.
 
-    - Info(): Returns the process metadata, which includes the Name and the EncryptedMessageCount.
+    - EncryptIntegerValue(Val: String): getter -- Encrypt an integer value.
 
-    - GetUsers(): This is a getter function that returns a table containing all users.
+    - DecryptIntegerValue(Val: String): getter -- Decrypt an integer value.
 
-    - GetDecryptedValueByKv(Key: String, Val: String): A getter function that returns a decrypted value based on the provided key-value (KV) inputs.
+    - GetDataByKv(Key: String, Val: String): getter -- return a data encrypted block via KV inputs.
 
-    - AddOperationOnEncryptedDataBy(sumParamLeftKey: String, sumParamLeftVal: String, sumParamRightKey: String, sumParamRightVal: String): This function retrieves the encrypted values corresponding to the provided KV request parameters and performs a sum operation. It then generates a new encrypted data block with the result of this sum.
-
-    - GetUserEncryptedDataBlocksIds(UserAddress: String): A getter function that returns the encryption data blocks issued by the specified user address.
+    - StoreComputeOperationOnEncryptedData(Data: string): This function stores encrypted data. If the sender provides a correctly formatted instance of encrypted data, it adds the data to the Encryption table. Upon successful storage, an acknowledgment is sent back to the sender, confirming that the encryption value has been added.
 
     - StoreEncryptedData(Data: string): This function stores encrypted data. If the sender provides a correctly formatted instance of encrypted data, it adds the data to the Encryption table. Upon successful storage, an acknowledgment is sent back to the sender, confirming that the encryption value has been added.
 
@@ -45,55 +40,8 @@ Tfhe.generateSecretKey()
 ]]
 --
 
--- The encrypted data template
-local template = {
-    type = "string",
-    value = "string"
-}
-
--- Function to check the type of each key in the object
-local function checkType(value, expectedType)
-    if expectedType == "table" then
-        return type(value) == "table"
-    else
-        return type(value) == expectedType
-    end
-end
-
--- Function to validate an object against the survey template
-local function validateInstance(instance, tmpl)
-    for key, expectedType in pairs(tmpl) do
-        local value = instance[key]
-        if type(expectedType) == "table" then
-            if type(value) ~= "table" then
-                return false, key .. " is not a table"
-            end
-            for i, v in ipairs(value) do
-                local valid, err = validateInstance(v, expectedType[1])
-                if not valid then
-                    return false, key .. "[" .. i .. "]: " .. err
-                end
-            end
-        else
-            if not checkType(value, expectedType) then
-                return false, key .. " is not of type " .. expectedType
-            end
-        end
-    end
-    return true
-end
-
--- Function that returns users count from the associative table Users
-local function users_count()
-    local count = 0
-    for _ in pairs(Users) do
-        count = count + 1
-    end
-    return count
-end
-
 -- Function to find a table with a specific value
-local function find_encripted_data_by_kv(k, v)
+local function find_data_by_kv(k, v)
     for i, inner_table in ipairs(Encryption) do
         if inner_table[k] == v then
             return inner_table
@@ -103,6 +51,122 @@ local function find_encripted_data_by_kv(k, v)
 end
 
 --[[
+     Add handlers for each incoming Action
+   ]]
+--
+
+--[[
+     EncryptIntegerValue
+   ]]
+--
+Handlers.add(
+    "EncryptIntegerValue",
+    Handlers.utils.hasMatchingTag("Action", "EncryptIntegerValue"),
+    function(msg)
+        local local_s = Tfhe.encryptInteger(msg.Tags.Val, "key")
+--         local_s["type"]=msg.Tags.Key
+--         local_s["value"]=
+-- --        local survey = find_survey_by_kv(msg.Tags.Key, msg.Tags.Val)
+
+        if local_s then
+            ao.send(
+                {
+                    Target = msg.From,
+                    Tags = {
+                        Action = "StoreEncryptedData"
+                    },
+                    Data = local_s
+                }
+            )
+        end
+    end
+)
+
+--[[
+     DecryptIntegerValue
+   ]]
+--
+Handlers.add(
+    "DecryptIntegerValue",
+    Handlers.utils.hasMatchingTag("Action", "DecryptIntegerValue"),
+    function(msg)
+        local local_s = Tfhe.decryptInteger(msg.Tags.Val, "key")
+        if local_s then
+            ao.send(
+                {
+                    Target = msg.From,                    
+                    Data = local_s
+                }
+            )
+        end
+    end
+)
+
+--[[
+     GetDataByKv
+   ]]
+--
+Handlers.add(
+    "getDataByKv",
+    Handlers.utils.hasMatchingTag("Action", "GetDataByKv"),
+    function(msg)
+        assert(type(msg.Tags.Key) == "string", "err_invalid_ao_id")
+        assert(type(msg.Tags.Val) == "string", "err_invalid_ao_id")
+        local data = find_data_by_kv(msg.Tags.Key, msg.Tags.Val)
+
+        if data then
+            ao.send(
+                {
+                    Target = msg.From,
+                    Data = json.encode(data)
+                }
+            )
+        end
+    end
+)
+
+--[[
+     StoreComputeOperationOnEncryptedData
+   ]]
+--
+Handlers.add(
+    "storeComputeOperationOnEncryptedData",
+    Handlers.utils.hasMatchingTag("Action", "StoreComputeOperationOnEncryptedData"),
+    function(msg)
+        local inMsg = json.decode(msg.Data)
+
+        if(inMsg.operation == "add") then
+            if not Users[msg.From] then
+                Users[msg.From] = {}
+            end
+            local data1 = find_data_by_kv("ao_id", inMsg.ao_id_val_left)
+            local data2 = find_data_by_kv("ao_id", inMsg.ao_id_val_right)
+                                
+            local local_s = {} 
+            local_s["data"] = Tfhe.addCiphertexts(data1, data2, "")
+            local_s["ao_id"] = msg.Id
+            local_s["ao_sender"] = msg.From
+    
+            print(local_s)
+            table.insert(Encryption, local_s)
+            table.insert(Users[msg.From], msg.Id)    
+            ao.send(
+                {
+                    Target = msg.From,
+                    Tags = {
+                        Action = "EncryptedData-Added"
+                    },
+                    Data = local_s
+                }
+            )        
+        else 
+            ao.send("Operation ont supported")
+        end
+    end
+)
+
+
+--[[
      StoreEncryptedData
    ]]
 --
@@ -110,34 +174,26 @@ Handlers.add(
     "storeEncryptedData",
     Handlers.utils.hasMatchingTag("Action", "StoreEncryptedData"),
     function(msg)
-        local local_s = json.decode(msg.Data)
-        -- print(local_s)
-        local valid, err = validateInstance(local_s, template)
-        assert(valid, "Recipient is required!")
+        local local_s = {} 
 
         if not Users[msg.From] then
             Users[msg.From] = {}
         end
 
+        local_s["data"] = msg.Data
         local_s["ao_id"] = msg.Id
         local_s["ao_sender"] = msg.From
 
-        if(local_s.type == "string") then
-            local_s["value"] = Tfhe.encryptString(local_s.value, "key")
-        else
-            if(local_s.type == "integer") then
-                local_s["value"] = Tfhe.encryptInteger(local_s.value, "key")
-            end     
-        end    
-
+        print(local_s)
         table.insert(Encryption, local_s)
         table.insert(Users[msg.From], msg.Id)    
         ao.send(
             {
                 Target = msg.From,
                 Tags = {
-                    Action = "StoreEncryptedData - Added"
-                }
+                    Action = "EncryptedData-Added"
+                },
+                Data = local_s
             }
         )
     end
