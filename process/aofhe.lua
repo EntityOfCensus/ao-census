@@ -113,7 +113,7 @@ Handlers.add(
         assert(type(msg.Tags.Key) == "string", "err_invalid_ao_id")
         assert(type(msg.Tags.Val) == "string", "err_invalid_ao_id")
         local data = find_data_by_kv(msg.Tags.Key, msg.Tags.Val)
-
+        print(data)
         if data then
             ao.send(
                 {
@@ -147,7 +147,6 @@ Handlers.add(
             local_s["ao_id"] = msg.Id
             local_s["ao_sender"] = msg.From
     
-            print(local_s)
             table.insert(Encryption, local_s)
             table.insert(Users[msg.From], msg.Id)    
             ao.send(

@@ -16,7 +16,7 @@ import {
   async function encryptIntegerValue(value) {
     try {
       const txIn = await dryrun({
-        process: "B6AocK4YIx8Sj1az7qPNucBsBRHGh-F-ODzyI1eBvVA",
+        process: "hDqk7GM9m429UI7KvbXKdFfsEvyw5Tx4otcbLAAh9sg",
         tags: [
           { name: "Action", value: "EncryptIntegerValue" },
           { name: "Val", value: value + "" },
@@ -35,7 +35,7 @@ import {
   async function storeEncryptedData(data) {
     try {
       const messageId = await message({
-        process: "B6AocK4YIx8Sj1az7qPNucBsBRHGh-F-ODzyI1eBvVA",
+        process: "hDqk7GM9m429UI7KvbXKdFfsEvyw5Tx4otcbLAAh9sg",
         signer: createDataItemSigner(wallet),
         // the survey as stringified JSON
         data: '{"type": "integer", "value":' + data + '}',
@@ -54,7 +54,7 @@ import {
  async function runAddOnEncryptedData(ao_id_val_left, ao_id_val_right) {
     try {
         const messageId = await message({
-          process: "B6AocK4YIx8Sj1az7qPNucBsBRHGh-F-ODzyI1eBvVA",
+          process: "hDqk7GM9m429UI7KvbXKdFfsEvyw5Tx4otcbLAAh9sg",
           signer: createDataItemSigner(wallet),
           // the survey as stringified JSON
           data: '{"operation": "add", "ao_id_val_left":' + ao_id_val_left + ', "ao_id_val_right":'+ ao_id_val_right + '}',
@@ -63,7 +63,7 @@ import {
     
         console.log(messageId);
         const txIn = await dryrun({
-            process: "B6AocK4YIx8Sj1az7qPNucBsBRHGh-F-ODzyI1eBvVA",
+            process: "hDqk7GM9m429UI7KvbXKdFfsEvyw5Tx4otcbLAAh9sg",
             tags: [
               { name: "Action", value: "getDataByKv" },
               { name: "Key", value: "ao_id" },
@@ -74,7 +74,7 @@ import {
           console.log(data);
 
           const txOut = await dryrun({
-              process: "B6AocK4YIx8Sj1az7qPNucBsBRHGh-F-ODzyI1eBvVA",
+              process: "hDqk7GM9m429UI7KvbXKdFfsEvyw5Tx4otcbLAAh9sg",
               tags: [
                 { name: "Action", value: "DecryptIntegerValue" },
                 { name: "Val", value: data.value },
