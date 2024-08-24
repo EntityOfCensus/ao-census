@@ -3,8 +3,8 @@ import {
   createDataItemSigner,
   message,
   connect,
-} from "@permaweb/aoconnect";
-import dotenv from "dotenv";
+} from '@permaweb/aoconnect';
+import dotenv from 'dotenv';
 dotenv.config();
 
 // Import the generated JavaScript glue code
@@ -25,8 +25,8 @@ getSurveys();
 async function getSurveys() {
   try {
     const tx = await dryrun({
-      process: "ENnyYpVeZlS0j01ss-Rht9rHVpmZ73vItDb2Xtrtikc",
-      tags: [{ name: "Action", value: "GetSurveys" }],
+      process: 'ENnyYpVeZlS0j01ss-Rht9rHVpmZ73vItDb2Xtrtikc',
+      tags: [{ name: 'Action', value: 'GetSurveys' }],
     });
 
     console.log(tx.Messages[0].Data);
@@ -41,11 +41,11 @@ async function getSurveys() {
 async function getSurveyByKv() {
   try {
     const tx = await dryrun({
-      process: "Hhj_asqYC1G_j_4PClxm6SOpzgjnnQbHLuBwOG2wSWg",
+      process: 'Hhj_asqYC1G_j_4PClxm6SOpzgjnnQbHLuBwOG2wSWg',
       tags: [
-        { name: "Action", value: "GetSurveyByKv" },
-        { name: "Key", value: "ao_id" },
-        { name: "Val", value: "Ou2q9Xwwka_fJ4cuQkavg9pgAZG88n64xOeiBghft5w" } //"Zwc3mlhb_jqSFfQMFhi_dqaLuaHTVxYI_YHx2XVLP8k" },
+        { name: 'Action', value: 'GetSurveyByKv' },
+        { name: 'Key', value: 'ao_id' },
+        { name: 'Val', value: 'Ou2q9Xwwka_fJ4cuQkavg9pgAZG88n64xOeiBghft5w' }, //"Zwc3mlhb_jqSFfQMFhi_dqaLuaHTVxYI_YHx2XVLP8k" },
       ],
     });
 
@@ -83,11 +83,11 @@ async function getSurveyByKv() {
 async function addSurvey() {
   try {
     const messageId = await message({
-      process: "Hhj_asqYC1G_j_4PClxm6SOpzgjnnQbHLuBwOG2wSWg",
+      process: 'Hhj_asqYC1G_j_4PClxm6SOpzgjnnQbHLuBwOG2wSWg',
       signer: createDataItemSigner(wallet),
       // the survey as stringified JSON
       data: '{"type":"respondent-survey","config":"easy","countryCodes":[],"countryNames":[],"wantedRespondents":1,"wantedQuestions":4,"targetGroups":[{"minimumAge":0,"maximumAge":0,"gender":"male","country":"Germany","wantedCompletes":"1","ir":"","loi":"","daysInField":"","startDate":"1983-08-17T00:00:00.000Z","time":"2024-06-04T14:15:10.846Z","visible":true}]}',
-      tags: [{ name: "Action", value: "AddSurvey" }],
+      tags: [{ name: 'Action', value: 'AddSurvey' }],
     });
 
     console.log(messageId);

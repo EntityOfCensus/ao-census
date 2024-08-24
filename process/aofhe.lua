@@ -20,9 +20,9 @@ local Tfhe = require("eoc_tfhe")
 
     - DecryptIntegerValue(Val: String): getter -- Decrypt an integer value.
 
-    - GetDataByKv(Key: String, Val: String): getter -- return a data encrypted block via KV inputs.
+    - ComputeOperationOnEncryptedData(operation: string, ao_id_val_left: string, ao_id_val_right): getter -- get compute encrypted values operation data
 
-    - StoreComputeOperationOnEncryptedData(Data: string): This function stores encrypted data. If the sender provides a correctly formatted instance of encrypted data, it adds the data to the Encryption table. Upon successful storage, an acknowledgment is sent back to the sender, confirming that the encryption value has been added.
+    - GetDataByKv(Key: String, Val: String): getter -- return a data encrypted block via KV inputs.
 
     - StoreEncryptedData(Data: string): This function stores encrypted data. If the sender provides a correctly formatted instance of encrypted data, it adds the data to the Encryption table. Upon successful storage, an acknowledgment is sent back to the sender, confirming that the encryption value has been added.
 
@@ -81,10 +81,6 @@ Handlers.add(
     Handlers.utils.hasMatchingTag("Action", "EncryptIntegerValue"),
     function(msg)
         local local_s = Tfhe.encryptInteger(msg.Tags.Val, "key")
---         local_s["type"]=msg.Tags.Key
---         local_s["value"]=
--- --        local survey = find_survey_by_kv(msg.Tags.Key, msg.Tags.Val)
-
         if local_s then
             ao.send(
                 {
@@ -143,40 +139,26 @@ Handlers.add(
 )
 
 --[[
-     StoreComputeOperationOnEncryptedData
+     ComputeOperationOnEncryptedData
    ]]
 --
 Handlers.add(
-    "storeComputeOperationOnEncryptedData",
-    Handlers.utils.hasMatchingTag("Action", "StoreComputeOperationOnEncryptedData"),
+    "computeOperationOnEncryptedData",
+    Handlers.utils.hasMatchingTag("Action", "ComputeOperationOnEncryptedData"),
     function(msg)
-        local inMsg = json.decode(msg.Data)
-
-        if(inMsg.operation == "add") then
-            if not Users[msg.From] then
-                Users[msg.From] = {}
-            end
-            local data1 = find_data_by_kv("ao_id", inMsg.ao_id_val_left)
-            local data2 = find_data_by_kv("ao_id", inMsg.ao_id_val_right)
-                                
-            local local_s = {} 
-            local_s["data"] = Tfhe.addCiphertexts(data1, data2, "")
-            local_s["ao_id"] = msg.Id
-            local_s["ao_sender"] = msg.From
-    
-            table.insert(Encryption, local_s)
-            table.insert(Users[msg.From], msg.Id)    
-            ao.send(
-                {
+        if(msg.Tags.operation == "add") then
+            local data1 = find_data_by_kv("ao_id", msg.Tags.ao_id_val_left)
+            local data2 = find_data_by_kv("ao_id", msg.Tags.ao_id_val_right)                                            
+            local local_s = Tfhe.addCiphertexts(json.decode(data1.data).value, json.decode(data2.data).value, "")
+            ao.send({
                     Target = msg.From,
-                    Tags = {
-                        Action = "EncryptedData-Added"
-                    },
                     Data = local_s
-                }
-            )        
+                })        
         else 
-            ao.send("Operation ont supported")
+            ao.send( {
+                Target = msg.From,
+                Data = "Operation ont supported"
+            })
         end
     end
 )

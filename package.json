@@ -6,7 +6,8 @@
   "main": "index.js",
   "scripts": {
     "start": "node ./src/main.js",
-    "test": "node --test --test-timeout=100000000 --expose-gc --experimental-wasm-memory64 ./src/test.mjs"
+    "test": "node --test --test-timeout=100000000 --expose-gc --experimental-wasm-memory64 ./src/test.mjs",
+      "format": "prettier --write \"{src,test}/**/*.{js,ts,mjs}\""
   },
   "repository": {
     "type": "git",
@@ -29,5 +30,9 @@
   },
   "engines": {
     "node": "22"
+  },
+  "devDependencies": {
+    "crypto": "^1.0.1",
+    "prettier": "^3.3.3"
   }
 }
