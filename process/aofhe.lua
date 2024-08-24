@@ -9,7 +9,12 @@ local Tfhe = require("eoc_tfhe")
 --[[
   This module implements the EntityOfCode AO FHE Demo on ao
 
+  Terms:
+    Sender: the wallet or Process that sent the Message
+
   It will first initialize the internal state, define utils code blocks and then attach handlers.
+
+    - GetEncryption(): getter -- return the table of all encryption.
 
     - EncryptIntegerValue(Val: String): getter -- Encrypt an integer value.
 
@@ -54,6 +59,18 @@ end
      Add handlers for each incoming Action
    ]]
 --
+
+--[[
+     GetEncryption
+   ]]
+--
+Handlers.add(
+    "getEncryption",
+    Handlers.utils.hasMatchingTag("Action", "GetEncryption"),
+    function(msg)
+        ao.send({Target = msg.From, Data = json.encode(Encryption)})
+    end
+)
 
 --[[
      EncryptIntegerValue
@@ -114,14 +131,14 @@ Handlers.add(
         assert(type(msg.Tags.Val) == "string", "err_invalid_ao_id")
         local data = find_data_by_kv(msg.Tags.Key, msg.Tags.Val)
         print(data)
-        if data then
+        -- if data then
             ao.send(
                 {
                     Target = msg.From,
-                    Data = json.encode(data)
+                    Data = data and json.encode(data) or "No Data"
                 }
             )
-        end
+        -- end
     end
 )
 
