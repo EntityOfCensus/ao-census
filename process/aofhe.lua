@@ -157,7 +157,7 @@ Handlers.add(
         else 
             ao.send( {
                 Target = msg.From,
-                Data = "Operation ont supported"
+                Data = "Operation not supported"
             })
         end
     end
