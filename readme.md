@@ -161,8 +161,10 @@ Here’s a simplified example of how these handlers and action tags might work t
 
 5. **Decrypt Result**: Finally, the result is decrypted using the `Decrypt` action tag, triggering the `DecryptIntegerValue()` handler.
 
+## How to Run the Code
+
+To learn how to run the code in this repository, please refer to the [AO FHE Process walkthrough](./load_ao_fhe_process.md). This document provides detailed steps on how to load and execute the AO process with the FHE module, including examples of loading the `aofhe.lua` script and testing the process.
+
 ## Conclusion
 
-This document provides a structured overview of the Lua handlers and action tags involved in the AO process, with a focus on Fully Homomorphic Encryption (FHE). The compute operations are extended to include Boolean logic and string comparisons, making the AO process versatile for various types of encrypted data operations. Additionally, it highlights the critical requirement of loading the AO process with a specific module to enable FHE computations.
-
----
+This document provides a structured overview of the Lua handlers and action tags involved in the AO process, with a focus on Fully Homomorphic Encryption (FHE). The compute operations are extended to include Boolean logic and string comparisons, making the AO process versatile for various types of encrypted data operations. Additionally, it highlights the critical requirement of loading the AO process with a specific module
