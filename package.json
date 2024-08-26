@@ -7,7 +7,7 @@
   "scripts": {
     "start": "node ./src/main.js",
     "test": "node --test --test-timeout=100000000 --expose-gc --experimental-wasm-memory64 ./src/test.mjs",
-      "format": "prettier --write \"{src,test}/**/*.{js,ts,mjs}\""
+    "format": "prettier --write \"{src,test}/**/*.{js,ts,mjs}\""
   },
   "repository": {
     "type": "git",
@@ -26,6 +26,7 @@
   "dependencies": {
     "@othent/kms": "^1.0.12",
     "@permaweb/aoconnect": "^0.0.48",
+    "assert": "^2.1.0",
     "dotenv": "^16.4.5"
   },
   "engines": {

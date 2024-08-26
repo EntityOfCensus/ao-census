@@ -11,12 +11,10 @@ import crypto from 'crypto';
 const wallet = JSON.parse(process.env.JWK);
 const ao_process_id = process.env.FHE_PROCESS_ID
 
-for (var i = 0; i < 15; ++i) {
   await runAddOnEncryptedData(
     await storeEncryptedData(await encryptIntegerValue(getRandomNumber16Bit())),
     await storeEncryptedData(await encryptIntegerValue(getRandomNumber16Bit())),
   );
-}
 await getEncryption();
 
 // Generate a random number between 0 and 2^16 - 1 (65535)
