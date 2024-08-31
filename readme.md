@@ -165,6 +165,32 @@ Here’s a simplified example of how these handlers and action tags might work t
 
 To learn how to run the code in this repository, please refer to the [AO FHE Process walkthrough](./load_ao_fhe_process.md). This document provides detailed steps on how to load and execute the AO process with the FHE module, including examples of loading the `aofhe.lua` script and testing the process.
 
+## Test Example: Encryption Operation Over AO Process without leaving a trace of these values in the messages
+
+This repository includes a test example demonstrating how to consume encryption operations over an AO process using the `dryrun` function from the `@permaweb/aoconnect` package. The test script is designed to encrypt and decrypt integer values without leaving a trace of these values in the messages.
+
+### Overview of the Test
+
+The script `encryptionWithDry.js` shows how to:
+1. **Encrypt an Integer Value**: The script encrypts an integer value by sending it within the `ao msg.Tags` using the `dryrun` function, ensuring that the actual value is not directly exposed in the messages.
+2. **Decrypt the Encrypted Value**: The encrypted value is then decrypted to verify that the encryption and decryption processes are correctly implemented.
+
+This example serves as a reference for developers looking to implement encryption operations securely over AO processes.
+
+### Running the Test
+
+To run the test example, make sure you have the required environment variables set up and the dependencies installed:
+
+1. **Set Environment Variables**: Ensure that the `FHE_PROCESS_ID` environment variable is configured in your `.env` file.
+2. **Install Dependencies**: Run `npm install` to install the necessary packages.
+3. **Run the Script**: Execute `node src/encryptionWithDry.js` to run the test.
+
+If the script runs successfully, it will print the encrypted and decrypted values to the console, demonstrating the functionality.
+
+### Note
+
+This is a test example and should not be used in production without proper review and modifications to suit your specific requirements.
+
 ## Conclusion
 
 This document provides a structured overview of the Lua handlers and action tags involved in the AO process, with a focus on Fully Homomorphic Encryption (FHE). The compute operations are extended to include Boolean logic and string comparisons, making the AO process versatile for various types of encrypted data operations. Additionally, it highlights the critical requirement of loading the AO process with a specific module
