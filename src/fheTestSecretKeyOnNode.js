@@ -12,11 +12,11 @@ import assert  from 'assert';
   const d1 = await decryptIntegerValue(encryptedValue)
   const d2 = await decryptIntegerValue2(encryptedValue)
   assert(35 == d1) 
-  assert(35 == d2) 
+  assert(35 != d2) 
   const encryptedValue2 = await encryptIntegerValue2(81)
   const d3 = await decryptIntegerValue(encryptedValue2)
   const d4 = await decryptIntegerValue2(encryptedValue2)
-  assert(81 == d3) 
+  assert(81 != d3) 
   assert(81 == d4) 
 
   async function encryptIntegerValue(value) {
