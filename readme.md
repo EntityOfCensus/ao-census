@@ -165,7 +165,7 @@ Here’s a simplified example of how these handlers and action tags might work t
 
 To learn how to run the code in this repository, please refer to the [AO FHE Process walkthrough](./load_ao_fhe_process.md). This document provides detailed steps on how to load and execute the AO process with the FHE module, including examples of loading the `aofhe.lua` script and testing the process.
 
-## Test Example: Encryption Operation Over AO Process without leaving a trace of these values in the messages
+## Test Example: Encryption Operation Over AO Process without leaving a trace of the values in the messages
 
 This repository includes a test example demonstrating how to consume encryption operations over an AO process using the `dryrun` function from the `@permaweb/aoconnect` package. The test script is designed to encrypt and decrypt integer values without leaving a trace of these values in the messages.
 
