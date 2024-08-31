@@ -167,7 +167,10 @@ To learn how to run the code in this repository, please refer to the [AO FHE Pro
 
 ## Test Example: Encryption Operation Over AO Process without leaving a trace of the values in the messages
 
-This repository includes a test example demonstrating how to consume encryption operations over an AO process using the  <a href="https://www.npmjs.com/package/@permaweb/aoconnect#dryrun" target="_blank">`dryrun`</a> function from the `@permaweb/aoconnect` package. The test script is designed to encrypt and decrypt integer values without leaving a trace of these values in the messages.
+This repository includes a test example that demonstrates how to perform encryption operations over an AO process using the <a href="https://www.npmjs.com/package/@permaweb/aoconnect#dryrun" target="_blank">`dryrun`</a> function from the `@permaweb/aoconnect` package. The test script encrypts and decrypts integer values by using `dryrun` to securely transmit these values without exposing them in the messages. 
+
+The script leverages the encryption library to encrypt the value and utilizes specific actions and tags parameters to define the encryption operation and pass the encrypted value as a tag. This encrypted output can then be processed and stored using the [`message`](https://www.npmjs.com/package/@permaweb/aoconnect#message) function, ensuring the integrity and confidentiality of the data throughout its lifecycle.
+ 
 
 ### Overview of the Test
 
