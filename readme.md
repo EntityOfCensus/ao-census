@@ -96,7 +96,93 @@ TFHE -> AO: Decrypted Integer
 
 ![Process Flow](assets/aofhetoken.svg)
 
+## Client Usage
+The client can interact with the AO FHE process using the provided JavaScript script [aofhetoken.js](src/aofhetoken.js) that utilizes @permaweb/aoconnect for communication with the AO process. Below are the key functions available for client-side usage:
 
+### Environment Setup
+Ensure that the .env file defines the following environment variables:
+
+JWK: Wallet secret key (in JSON format).
+FHE_PROCESS_ID: The process ID of the AO FHE process.
+ID_TOKEN: The ID token used for registering and decrypting operations.
+### Key Client Functions
+1. **Register Token** The client registers a token, which generates the FHE secret key using the id_token:
+
+```javascript
+async function registerToken(id_token) {
+    const messageId = await message({
+        process: ao_process_id,
+        signer: createDataItemSigner(wallet),
+        data: '{"id_token:"' + id_token + '"}',
+        tags: [{ name: 'Action', value: 'RegisterToken' }],
+    });
+    return messageId;
+}
+```
+2. **Encrypt Integer Value** The client can encrypt an integer value using the following function:
+
+```javascript
+async function encryptIntegerValue(value) {
+    const encryptedValue = await dryrun({
+        process: ao_process_id,
+        data: value.toString(),
+        tags: [{ name: 'Action', value: 'EncryptIntegerValue' }],
+    });
+    return encryptedValue.Messages[0].Data;
+}
+```
+3. **Decrypt Integer** Value The client decrypts an encrypted integer value using the registered id_token:
+
+```javascript
+async function decryptIntegerValue(value, id_token) {
+    const decryptedValue = await dryrun({
+        process: ao_process_id,
+        data: value.toString(),
+        tags: [
+            { name: 'Action', value: 'DecryptIntegerValue' },
+            { name: 'id_token', value: id_token },
+        ],
+    });
+    return decryptedValue.Messages[0].Data;
+}
+```
+4. **Compute on Encrypted Data** The client can perform an arithmetic operation (e.g., addition) on two encrypted values:
+
+```javascript
+async function computeOperationOnEncryptedData(val_left, val_right) {
+    const result = await dryrun({
+        process: ao_process_id,
+        data: JSON.stringify({
+            param_value_left: val_left,
+            param_value_right: val_right
+        }),
+        tags: [
+            { name: 'Action', value: 'ComputeOperationOnEncryptedData' },
+            { name: 'operation', value: 'add' },
+        ],
+    });
+    return result.Messages[0].Data;
+}
+```
+### Example Usage
+The following is an example of registering a token, encrypting two integers, performing an addition operation on the encrypted values, and decrypting the result:
+
+```javascript
+(async () => {
+    const val_left = getRandomNumber16Bit();
+    const val_right = getRandomNumber16Bit();
+    const registerToken = await registerToken(id_token);
+    
+    const encryptedSum = await computeOperationOnEncryptedData(
+        await encryptIntegerValue(val_left), 
+        await encryptIntegerValue(val_right)
+    );
+
+    const decryptedSum = await decryptIntegerValue(encryptedSum, id_token);
+    
+    console.log(`Decrypted sum: ${decryptedSum}`);
+})();
+```
 ## How to Run
 Load the AO Process with the FHE module:
 
