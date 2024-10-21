@@ -1,6 +1,115 @@
 
 ---
 
+# AO FHE JWT Token Demo
+
+## Overview
+
+This module demonstrates Fully Homomorphic Encryption (FHE) operations using the EntityOfCode AO framework and JWT tokens for secure decryption. The AO process covers the following key operations:
+- **Token Registration**: A token is registered, and an FHE secret key is generated based on the token's `id_token`.
+- **Encryption**: Integer values are encrypted using the FHE module.
+- **Computation**: Arithmetic operations (e.g., addition) are performed on encrypted values.
+- **Decryption**: Encrypted values are decrypted securely using the registered token.
+
+## Key Operations
+
+### Register Token
+Registers a token in the AO process and generates a secret key using the `id_token`.
+
+```lua
+Handlers.add(
+    "registerToken",
+    Handlers.utils.hasMatchingTag("Action", "RegisterToken"),
+    function(msg)
+        local_s = {}
+        local_s["data"] = msg.Data
+        if local_s["data"] then
+            Tfhe.generateSecretKey(json.decode(local_s["data"]).id_token)
+        end
+    end
+)
+```
+### Encrypt Integer Value
+Encrypts an integer value using the FHE module.
+
+```lua
+Handlers.add(
+    "EncryptIntegerValue",
+    Handlers.utils.hasMatchingTag("Action", "EncryptIntegerValue"),
+    function(msg)
+        local_s = Tfhe.encryptInteger(msg.Data)
+    end
+)
+```
+
+### Compute Operation on Encrypted Data
+Performs arithmetic operations (e.g., addition) on encrypted values.
+
+```lua
+Handlers.add(
+    "computeOperationOnEncryptedData",
+    Handlers.utils.hasMatchingTag("Action", "ComputeOperationOnEncryptedData"),
+    function(msg)
+        local data = json.decode(msg.Data)
+        local_s = Tfhe.addCiphertexts(data.param_value_left, data.param_value_right)
+    end
+)
+```
+
+### Decrypt Integer Value
+Decrypts an integer value using the registered id_token.
+
+```lua
+Handlers.add(
+    "DecryptIntegerValue",
+    Handlers.utils.hasMatchingTag("Action", "DecryptIntegerValue"),
+    function(msg)
+        local_s = Tfhe.decryptInteger(msg.Data, msg.Tags.id_token)
+    end
+)
+```
+## Process Flow
+Here is the process flow for the AO FHE operations:
+
+```plantuml
+@startuml
+actor User
+participant "AO Process" as AO
+participant "TFHE Module" as TFHE
+
+User -> AO: Register Token
+AO -> TFHE: Generate Secret Key (id_token)
+
+User -> AO: Encrypt Integer
+AO -> TFHE: Encrypt Integer
+TFHE -> AO: Encrypted Integer
+
+User -> AO: Compute (add)
+AO -> TFHE: Add Encrypted Values
+TFHE -> AO: Computation Result
+
+User -> AO: Decrypt Integer
+AO -> TFHE: Decrypt Integer (id_token)
+TFHE -> AO: Decrypted Integer
+@enduml
+```
+
+![Process Flow](assets/aofhetoken.svg)
+
+
+## How to Run
+Load the AO Process with the FHE module:
+
+```sh
+aos process_name --module=lZ-vBcgqmfOS8uqLhVkuo5I4Lfh1bEyqL4V93qZ6K2I
+```
+Load the aofhetoken.lua script:
+
+```sh
+.load process/aofhetoken.lua
+```
+Test your process: Ensure that the .env file defines the JWT (wallet secret key) and FHE_PROCESS_ID.
+
 # FHE Lua Handlers in AO Process
 
 ## Overview
@@ -20,10 +129,10 @@ local Tfhe = require("eoc_tfhe")
 For the AO process to support FHE computation, it must be loaded with the specific module using the following flag:
 
 ```sh
-aos process_name --module=lZ-vBcgqmfOS8uqLhVkuo5I4Lfh1bEyqL4V93qZ6K2I
+aos process_name --module=txrhC5fLXKgnyRm-WMmOsLzBEZkplT6T6gzuRvA7JFE
 ```
 
-This module (`lZ-vBcgqmfOS8uqLhVkuo5I4Lfh1bEyqL4V93qZ6K2I`) is essential as it provides the necessary environment and functions for FHE operations within the AO process. This particular code implementation is significant as it represents the first instance of FHE computation being supported on AO Processes.
+This module (`txrhC5fLXKgnyRm-WMmOsLzBEZkplT6T6gzuRvA7JFE`) is essential as it provides the necessary environment and functions for FHE operations within the AO process. This particular code implementation is significant as it represents the first instance of FHE computation being supported on AO Processes.
 
 ## Fully Homomorphic Encryption (FHE)
 
