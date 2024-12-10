@@ -10,17 +10,18 @@ import crypto from 'crypto';
 dotenv.config();
 
 const wallet = JSON.parse(process.env.JWK);
-const ao_process_id = process.env.FHE_PROCESS_ID
+const ao_process_id = process.env.FHE_PROCESS_ID2
 
-const id_token = process.env.ID_TOKEN;
+const id_token = process.env.ID_TOKEN2;
+const jkws = process.env.JKWS;
 
-async function registerToken(id_token) {
+async function registerToken(id_token, jkws) {
     try {
         const messageId = await message({
             process: ao_process_id,
             signer: createDataItemSigner(wallet),
             // the survey as stringified JSON
-            data: '{"id_token:"' + id_token + '"}',
+            data: '{"id_token": "' + id_token + '", "jkws": "' + jkws + '"}',
             tags: [{ name: 'Action', value: 'RegisterToken' }],
         });
         console.log(messageId);
@@ -49,15 +50,16 @@ async function encryptIntegerValue(value) {
     }
   }
 
-  async function decryptIntegerValue(value, id_token) {
+  async function decryptIntegerValue(value, id_token, jkws) {
     try {
       console.log('decrypt value', value);
       const txIn = await dryrun({
         process: ao_process_id,
-        data: value + "",
+        data:  value + "",
         tags: [
           { name: 'Action', value: 'DecryptIntegerValue' },
           { name: 'id_token', value: id_token },
+          { name: 'jkws', value: jkws}
         ],
       });
       const data = txIn.Messages[0].Data + '';
@@ -79,7 +81,7 @@ async function encryptIntegerValue(value) {
           { name: 'operation', value: 'add' },
         ],
       });
-      const data = txIn.Messages[0].Data + '';
+      const data = txAddOperation.Messages[0].Data + '';
       console.log(data);
       return data;
     } catch (error) {
@@ -101,16 +103,16 @@ function getRandomNumber16Bit() {
   
 
   (async () => {
-    const val_left = getRandomNumber16Bit();
-    const val_right = getRandomNumber16Bit();
-    const registerToken = await registerToken(id_token);
+    const val_left = 28110; //getRandomNumber16Bit();
+    const val_right = 36956; //getRandomNumber16Bit();
+    const registerTokenMsgId = await registerToken(id_token, jkws);
     
     const encryptedSum = await computeOperationOnEncryptedData(
         await encryptIntegerValue(val_left), 
         await encryptIntegerValue(val_right)
     );
 
-    const decryptedSum = await decryptIntegerValue(encryptedSum, id_token);
+    const decryptedSum = await decryptIntegerValue(encryptedSum, id_token, jkws);
     
     console.log(`Decrypted sum: ${decryptedSum}`);
 })();
